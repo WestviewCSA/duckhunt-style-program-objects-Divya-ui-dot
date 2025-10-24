@@ -1,14 +1,23 @@
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.net.URL;
 
 // The Duck class represents a picture of a duck that can be drawn on the screen.
-public class Duck {
+public class greenGoblin {
     // Instance variables (data that belongs to each Duck object)
     private Image img;               // Stores the picture of the duck
+    private Image normal; //normal look
+    private Image dead;
+    private Image threeShot = getImage("/imgs/threeShot.png");
+    private Image twoShot = getImage("/imgs/twoShot.png");
+    private Image oneShot = getImage("/imgs/oneShot.png");
+    
+    
     private AffineTransform tx;      // Used to move (translate) and resize (scale) the image
 
     // Variables to control the size (scale) of the duck image
@@ -23,24 +32,38 @@ public class Duck {
     private int vx;
     private int vy;
     
+    //debugging variable
+    public boolean debugging = false;
+
+   
     // Constructor: runs when you make a new Duck object
-    public Duck() {
-        img = getImage("/imgs/spiderman gif.gif"); // Load the image file
+    public greenGoblin() {
+        normal = getImage("/imgs/green goblin alive GIF.gif"); // Load the image file
+        dead = getImage("/imgs/explosion.png");
+        
+        //img will point to current state object for image
+        img = normal;
+        
+        
+        
+        
         
         tx = AffineTransform.getTranslateInstance(0, 0); // Start with image at (0,0)
         
         // Default values
-        scaleX = 5.0;
-        scaleY = 5.0;
+        scaleX = 2.0;
+        scaleY = 2.0;
         x = 500;
-        y = 500;
-
+        y = 100;
         
+        //init vx and vy variables to non zero value
+        vx = 5;
+        vy = 2;
         init(x, y); // Set up the starting location and size
     }
     
     //2nd constructor to initialize location and scale!
-    public Duck(int x, int y, int scaleX, int scaleY) {
+    public greenGoblin(int x, int y, int scaleX, int scaleY) {
     	this();
     	this.x 		= x;
     	this.y 		= y;
@@ -50,7 +73,7 @@ public class Duck {
     }
     
     //2nd constructor to initialize location and scale!
-    public Duck(int x, int y, int scaleX, int scaleY, int vx, int vy) {
+    public greenGoblin(int x, int y, int scaleX, int scaleY, int vx, int vy) {
     	this();
     	this.x 		= x;
     	this.y 		= y;
@@ -75,7 +98,29 @@ public class Duck {
     
     //update any variables for the object such as x, y, vx, vy
     public void update() {
-    	
+    	x += vx;
+    	//bounce off right side
+    	if(x >= 685 || x <= 0) {
+    		vx *= -1;
+    	}
+    	y += vy;
+   	    if(y <= 0) {
+    		vy *= -1;
+    		
+    	}
+    	if(vx == 0 && vy < 10) { 
+    		if(y >= 750) {
+    			vy = -(int)(Math.random()*8+3);
+    			vx = -(int)(Math.random()*8+3);
+    			img = normal;
+    			//50% o the time, vx is negative
+    			if(Math.random()<0.5) {
+    				vx *= -1;
+    			}
+    		}
+    	}
+    	//regular behavior - regular bouncing from the bottom
+    	if(y >= 768 && vx != 0) vy *= -1;
     }
     
     
@@ -86,9 +131,17 @@ public class Duck {
         g2.drawImage(img, tx, null);      // Actually draw the duck image
         update();
         init(x,y);
+        
+      //create a green hitbox for debugging
+        if(debugging) {
+        g.setColor(Color.magenta);
+        g.drawRect((int)x , (int) y, 100, 100);
+        }
     }
     
-    // Setup method: places the duck at (a, b) and scales it
+    
+    
+    // Setup method : places the duck at (a, b) and scales it
     private void init(double a, double b) {
         tx.setToTranslation(a, b);        // Move the image to position (a, b)
         tx.scale(scaleX, scaleY);         // Resize the image using the scale variables
@@ -98,14 +151,13 @@ public class Duck {
     private Image getImage(String path) {
         Image tempImage = null;
         try {
-            URL imageURL = Duck.class.getResource(path);
+            URL imageURL = greenGoblin.class.getResource(path);
             tempImage = Toolkit.getDefaultToolkit().getImage(imageURL);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return tempImage;
     }
-
     // NEW: Method to set scale
     public void setScale(double sx, double sy) {
         scaleX = sx;
@@ -119,4 +171,42 @@ public class Duck {
         y = newY;
         init(x, y);  // Keep current scale
     }
+   
+    //collision and collision logic
+    public boolean checkCollision(int mX, int mY) {
+    	//represent the mouse as a rectangle
+    	Rectangle mouse = new Rectangle(mX, mY, 50, 50);
+    	
+    	//represent this object as a Rectangle
+    	Rectangle thisObject = new Rectangle((int) x, (int) y, 100, 100);
+    	
+    	//use built-in method for Rectangle to check if they intersect!
+    	//aka Collision
+    	if(mouse.intersects(thisObject)) {
+    		
+    		//logic if colliding
+    		vx = 0; //turn off vx to fall from the sy
+    		vy = 9; //fall y -gravity
+    		
+    		//change sprite to the alternate skin
+    		img = dead;//dead sprite
+    		
+    		
+    		return true;
+    	}
+    	else {
+    		
+    		//logic if not colliding
+    		return false;
+    		
+    	}
+    	
+    }
+  
+    
+    
+    
+    
+    
+    
 }

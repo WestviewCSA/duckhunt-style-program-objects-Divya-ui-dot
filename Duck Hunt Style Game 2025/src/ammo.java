@@ -6,7 +6,7 @@ import java.awt.geom.AffineTransform;
 import java.net.URL;
 
 // The Duck class represents a picture of a duck that can be drawn on the screen.
-public class Duck {
+public class ammo {
     // Instance variables (data that belongs to each Duck object)
     private Image img;               // Stores the picture of the duck
     private AffineTransform tx;      // Used to move (translate) and resize (scale) the image
@@ -16,31 +16,31 @@ public class Duck {
     private double scaleY;           
 
     // Variables to control the location (x and y position) of the duck
-    private double x;                
-    private double y;        
+    private  double x;                
+    private  double y;        
     
     //variables for speed
     private int vx;
     private int vy;
-    
+    private String imgCheck;
+
     // Constructor: runs when you make a new Duck object
-    public Duck() {
-        img = getImage("/imgs/spiderman gif.gif"); // Load the image file
-        
+    public ammo() {
+    	img = getImage("/imgs/threeShot.png"); // Load the image file
+       
         tx = AffineTransform.getTranslateInstance(0, 0); // Start with image at (0,0)
         
         // Default values
-        scaleX = 5.0;
-        scaleY = 5.0;
-        x = 500;
-        y = 500;
+        scaleX = 1.75;
+        scaleY = 1.75;
+        x = 5;
+        y = 630;
 
-        
         init(x, y); // Set up the starting location and size
     }
     
     //2nd constructor to initialize location and scale!
-    public Duck(int x, int y, int scaleX, int scaleY) {
+    public ammo(int x, int y, int scaleX, int scaleY) {
     	this();
     	this.x 		= x;
     	this.y 		= y;
@@ -50,7 +50,7 @@ public class Duck {
     }
     
     //2nd constructor to initialize location and scale!
-    public Duck(int x, int y, int scaleX, int scaleY, int vx, int vy) {
+    public ammo(int x, int y, int scaleX, int scaleY, int vx, int vy) {
     	this();
     	this.x 		= x;
     	this.y 		= y;
@@ -66,18 +66,20 @@ public class Duck {
     	this.vy = vy;
     }
     
-    
+   
     // Changes the picture to a new image file
-    public void changePicture(String imageFileName) {
+    public String changePicture(String imageFileName) {
         img = getImage("/imgs/"+imageFileName);
         init(x, y); // keep same location when changing image
+        String imgC = imageFileName;
+        return imgC;
+  
     }
-    
+   
     //update any variables for the object such as x, y, vx, vy
     public void update() {
     	
     }
-    
     
     
     // Draws the duck on the screen
@@ -98,7 +100,7 @@ public class Duck {
     private Image getImage(String path) {
         Image tempImage = null;
         try {
-            URL imageURL = Duck.class.getResource(path);
+            URL imageURL = ammo.class.getResource(path);
             tempImage = Toolkit.getDefaultToolkit().getImage(imageURL);
         } catch (Exception e) {
             e.printStackTrace();
