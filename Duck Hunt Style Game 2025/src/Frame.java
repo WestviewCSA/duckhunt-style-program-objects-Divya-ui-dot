@@ -25,7 +25,7 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 	//count
     private int count = 3;
     private int hitCount = 0;
-	
+    private int level = 1;
 	/**
 	 * Declare and instantiate (create) your objects here
 	 */
@@ -38,6 +38,11 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 	private ammo myAmmo = new ammo();
 	private gameOver myGameOver = new gameOver();
 	private hitCount myHitCount = new hitCount();
+	private Music webSound = new Music("webSound.wav", false);
+	private Music explosionSound = new Music("explosionSound.wav", false);
+	private Music themeSong = new Music("themeSong.wav", true);
+	private Music levelUp = new Music("levelUp.wav", false);
+	private Music missSound = new Music("missSound.wav", false);
 	public void paint(Graphics pen) {
 		
 		//this line of code is to force redraw the entire frame
@@ -45,6 +50,7 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 		
 		//background should be draw before the objects
 		//or based on how you want to layer
+		
 		myBackground.paint(pen);
 		myTree.paint(pen);
 		//call paint for the object
@@ -53,7 +59,9 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 		duckObject.paint(pen);
 		myBush.paint(pen);
 		gG.paint(pen);
-		//gG2.paint(pen);
+		if(level >= 2) {
+			gG2.paint(pen);
+		}
 		myAmmo.paint(pen);
 		myHitCount.paint(pen);
 	}
@@ -81,10 +89,12 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 	public void mousePressed(MouseEvent mouse) {
 	    // Runs when a mouse button is pressed down.
 	    // Example: You could start dragging an object here.
+		webSound.play();
 		System.out.println(mouse.getX()+":"+mouse.getY());
 		gG.checkCollision(mouse.getX(), mouse.getY());
-		//gG2.checkCollision(mouse.getX(), mouse.getY());
-		if(gG.checkCollision(mouse.getX(), mouse.getY()) == false) {
+		gG2.checkCollision(mouse.getX(), mouse.getY());
+		if(gG.checkCollision(mouse.getX(), mouse.getY()) == false && gG2.checkCollision(mouse.getX(), mouse.getY()) == false) {
+			missSound.play();
 			count --;
 			if(count == 2) {
 				myAmmo.changePicture("twoShot.png");
@@ -99,49 +109,65 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 			}
 		}
 		
-		if(gG.checkCollision(mouse.getX(), mouse.getY()) == true){
+		if(gG.checkCollision(mouse.getX(), mouse.getY()) == true || gG2.checkCollision(mouse.getX(), mouse.getY()) == true){
 			hitCount ++;
 			if(hitCount == 1) {
 				myHitCount.changePicture("oneHit.png");
 				duckObject.changePicture("spidermanYay.gif");
+				explosionSound.play();
+			}
+			else if(hitCount == 0) {
+				myHitCount.changePicture("noHit.png");
 			}
 			else if(hitCount == 2) {
 				myHitCount.changePicture("twoHit.png");
 				duckObject.changePicture("spidermanYay2.gif");
+				explosionSound.play();
 			}
 			else if(hitCount == 3) {
 				myHitCount.changePicture("threeHit.png");
-				duckObject.changePicture("spidermanYay.gif");
+				duckObject.changePicture("spidermanYay3.gif");
+				explosionSound.play();
 			}
 			else if(hitCount == 4) {
 				myHitCount.changePicture("fourHit.png");
-				duckObject.changePicture("spidermanYay2.gif");
+				duckObject.changePicture("spidermanYay4.gif");
+				explosionSound.play();
 			}
 			else if(hitCount == 5) {
 				myHitCount.changePicture("fiveHit.png");
-				duckObject.changePicture("spidermanYay.gif");
+				duckObject.changePicture("spidermanYay5.gif");
+				explosionSound.play();
 			}
 			else if(hitCount == 6) {
 				myHitCount.changePicture("sixHit.png");
-				duckObject.changePicture("spidermanYay2.gif");
+				duckObject.changePicture("spidermanYay6.gif");
+				explosionSound.play();
 			}
 			else if(hitCount == 7) {
 				myHitCount.changePicture("sevenHit.png");
-				duckObject.changePicture("spidermanYay.gif");
+				duckObject.changePicture("spidermanYay7.gif");
+				explosionSound.play();
 			}
 			else if(hitCount == 8) {
 				myHitCount.changePicture("eightHit.png");
-				duckObject.changePicture("spidermanYay2.gif");
+				duckObject.changePicture("spidermanYay8.gif");
+				explosionSound.play();
 			}
 			else if(hitCount == 9) {
 				myHitCount.changePicture("nineHit.png");
-				duckObject.changePicture("spidermanYay.gif");
+				duckObject.changePicture("spidermanYay9.gif");
+				explosionSound.play();
 			}
 			else {
 				myHitCount.changePicture("tenHit.png");
-				duckObject.changePicture("spidermanYay2.gif");
+				duckObject.changePicture("spidermanYay10.gif");
+				levelUp.play();
+				level++;
+				hitCount = 0;
 			}
 		}
+		
 	}
 
 	@Override
@@ -214,7 +240,7 @@ public class Frame extends JPanel implements ActionListener, MouseListener, KeyL
 		t.start();
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setVisible(true);
-		
+		themeSong.play();	
 		//Cursor icon code
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		Image image = toolkit.getImage("cursor.png");
